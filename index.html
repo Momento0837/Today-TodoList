@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>&#50724;&#45720;&#51032; &#54624; &#51068;</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="app-shell" aria-live="polite">
+      <section class="todo-stage">
+        <header class="app-header">
+          <p class="eyebrow">Today</p>
+          <h1>&#50724;&#45720;&#51032; &#54624; &#51068;</h1>
+        </header>
+
+        <section class="todo-list-wrap" aria-label="Registered todos">
+          <ul id="todoList" class="todo-list"></ul>
+          <p id="emptyText" class="empty-text">&#50724;&#45720;&#51032; &#52395; &#48264;&#51704; &#54624; &#51068;&#51012; &#51077;&#47141;&#54616;&#49464;&#50836;.</p>
+        </section>
+        <button id="clearAllButton" class="clear-all-button" type="button" hidden>
+          <img class="clear-all-icon" src="images/Icon_DeleteAll.png" alt="" aria-hidden="true">
+          <span>&#47784;&#46160; &#49325;&#51228;</span>
+        </button>
+        <div id="todoScrollbar" class="todo-scrollbar" aria-hidden="true">
+          <div id="todoScrollThumb" class="todo-scrollbar-thumb"></div>
+        </div>
+      </section>
+
+      <form id="todoForm" class="todo-form is-centered" autocomplete="off">
+        <label class="sr-only" for="todoInput">&#50724;&#45720; &#54624; &#51068;</label>
+        <input id="todoInput" type="text" placeholder="&#50724;&#45720; &#54644;&#50556; &#54624; &#51068;&#51012; &#51077;&#47141;&#54616;&#49464;&#50836;" maxlength="80">
+        <button type="submit">&#51077;&#47141;</button>
+      </form>
+    </main>
+
+    <p class="reset-note">&#50724;&#51204; 1&#49884;&#50640; &#52488;&#44592;&#54868; &#46076;&#50836;!</p>
+    <aside class="time-widget" aria-label="Clock and remaining time">
+      <span id="dateText" class="date-text">----</span>
+      <time id="clockText">--:--</time>
+      <span id="remainText">&#47532;&#49483;&#44620;&#51648; --&#49884;&#44036; --&#48516;</span>
+    </aside>
+
+    <script src="script.js"></script>
+  </body>
+</html>

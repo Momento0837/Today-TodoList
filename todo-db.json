@@ -1,0 +1,7 @@
+{
+  "description": "Prototype schema. The browser version saves live data to localStorage because static HTML cannot write back to this JSON file directly.",
+  "resetHour": 1,
+  "dayKey": null,
+  "lastInputAt": null,
+  "todos": []
+}
