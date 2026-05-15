@@ -24,14 +24,17 @@
   --shadow: 0 22px 64px rgba(83, 142, 168, 0.18);
   --selection-bg: #78cfe5;
   --selection-ink: #17384b;
-  --dropdown-bg: rgba(255, 255, 255, 0.7);
+  --dropdown-bg: rgba(255, 255, 255, 0.65);
+  --dropdown-select-bg: rgba(255, 255, 255, 0.9);
   --priority-1-bg: #fff0b8;
   --priority-1-ink: #574b20;
   --priority-2-bg: #c8eff7;
   --priority-2-ink: #235060;
   --priority-3-bg: #d8f2dc;
   --priority-3-ink: #2c5536;
-  --slide-button: #8aa9d8;
+  --scrollbar-track: rgba(255, 255, 255, 0.28);
+  --slide-button: #6fb2cf;
+  --slide-button-active: #579fbe;
   --glow-shift-x: 0%;
   --glow-shift-y: 0%;
 }
@@ -66,6 +69,9 @@ body[data-sky="sunset"] {
   --muted: rgba(77, 64, 85, 0.62);
   --selection-bg: #efa5a3;
   --selection-ink: #3f3147;
+  --scrollbar-track: rgba(255, 236, 224, 0.34);
+  --slide-button: #efa5a3;
+  --slide-button-active: #d9858f;
 }
 
 body[data-sky="night"] {
@@ -80,6 +86,9 @@ body[data-sky="night"] {
   --shadow: 0 24px 70px rgba(65, 82, 130, 0.18);
   --selection-bg: #7f91d1;
   --selection-ink: #ffffff;
+  --scrollbar-track: rgba(255, 255, 255, 0.18);
+  --slide-button: #8aa9d8;
+  --slide-button-active: #6f95cf;
 }
 
 ::selection {
@@ -158,10 +167,10 @@ h1 {
   bottom: 135px;
   width: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--scrollbar-track);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 180ms ease;
+  transition: opacity 180ms ease, background 300ms ease;
 }
 
 .todo-scrollbar.is-visible {
@@ -178,9 +187,11 @@ h1 {
   border-radius: 999px;
   background: var(--slide-button);
   cursor: grab;
+  transition: background 300ms ease;
 }
 
 .todo-scrollbar-thumb:active {
+  background: var(--slide-button-active);
   cursor: grabbing;
 }
 
@@ -191,16 +202,51 @@ h1 {
   z-index: 3;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
   height: 32px;
-  border: 1px solid #e6a2aa;
+  border: 0;
   border-radius: 999px;
-  padding: 0 12px 0 9px;
+  padding: 0;
   color: #6a2f35;
-  background: rgba(255, 212, 216, 0.8);
-  box-shadow: 0 10px 24px rgba(106, 47, 53, 0.08);
+  background: transparent;
   font-size: 0.8rem;
   font-weight: 800;
+  overflow: visible;
+}
+
+.clear-all-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid #e6a2aa;
+  border-radius: inherit;
+  background: rgba(255, 212, 216, 0.8);
+  box-shadow: 0 10px 24px rgba(106, 47, 53, 0.08);
+  transform-origin: calc(100% - 10px) center;
+  transition: transform 360ms ease, box-shadow 180ms ease;
+  will-change: transform;
+}
+
+.clear-all-button-inner {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px 0 9px;
+  transform-origin: calc(100% - 10px) center;
+  transition: transform 360ms ease;
+  will-change: transform;
+}
+
+.clear-all-button:hover::before,
+.clear-all-button:hover .clear-all-button-inner {
+  transform: rotate(10deg);
+  animation: clear-all-spring 1180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.clear-all-button:hover::before {
+  box-shadow: 0 14px 30px rgba(106, 47, 53, 0.12);
 }
 
 /* .clear-all-button span{
@@ -276,17 +322,45 @@ h1 {
 }
 
 .done-button {
+  position: relative;
+  overflow: hidden;
   color: #24513a;
   background: #cfeedd;
   font-weight: 700;
   padding-top: 2px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
 }
 
 .delete-button {
+  position: relative;
+  overflow: hidden;
   color: #6a2f35;
   background: #ffd4d8;
   font-weight: 700;
   padding-top: 2px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.done-button::after,
+.delete-button::after {
+  content: "";
+  position: absolute;
+  inset: -35% -80%;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.58) 50%, transparent 65%);
+  opacity: 0;
+  transform: translateX(-42%);
+  pointer-events: none;
+}
+
+.done-button:hover,
+.delete-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(83, 142, 168, 0.12);
+}
+
+.done-button:hover::after,
+.delete-button:hover::after {
+  animation: glass-shine 2.6s ease-in-out infinite;
 }
 
 .priority-select {
@@ -358,7 +432,7 @@ h1 {
   border-radius: 8px;
   padding: 6px;
   color: var(--ink);
-  background: var(--dropdown-bg);
+  background: var(--dropdown-select-bg);
   box-shadow: 0 16px 36px rgba(83, 142, 168, 0.2);
   backdrop-filter: blur(14px);
   z-index: 99;
@@ -524,6 +598,7 @@ h1 {
 }
 
 .todo-form button {
+  position: relative;
   height: 48px;
   border: 0;
   border-radius: 6px;
@@ -531,6 +606,12 @@ h1 {
   color: #fff;
   background: #6f95cf;
   font-weight: 800;
+  transition: transform 180ms ease, box-shadow 240ms ease;
+}
+
+.todo-form button:hover {
+  transform: translateY(-2px);
+  animation: input-button-glow 2.8s ease-in-out infinite;
 }
 
 .time-widget {
@@ -562,6 +643,28 @@ h1 {
   font-weight: 800;
   text-align: right;
   text-shadow: 0 1px 12px rgba(255, 255, 255, 0.2);
+}
+
+footer {
+  position: fixed;
+  left: 50%;
+  bottom: 2.1%;
+  z-index: 1;
+  max-width: min(320px, calc(100% - 32px));
+  pointer-events: none;
+  text-align: center;
+  text-wrap-mode: nowrap;
+  transform: translateX(-50%);
+}
+
+.copyright {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.4;
+  opacity: 0.25;
+  text-shadow: 0 1px 12px rgba(255, 255, 255, 0.18);
 }
 
 .time-widget time {
@@ -606,8 +709,71 @@ h1 {
   }
 }
 
+@keyframes clear-all-spring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  22% {
+    transform: rotate(11.4deg);
+  }
+
+  35% {
+    transform: rotate(9.1deg);
+  }
+
+  54% {
+    transform: rotate(10.5deg);
+  }
+
+  82% {
+    transform: rotate(9.85deg);
+  }
+
+  100% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes glass-shine {
+  0%,
+  28% {
+    opacity: 0;
+    transform: translateX(-42%);
+  }
+
+  48% {
+    opacity: 0.52;
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: translateX(42%);
+  }
+}
+
+@keyframes input-button-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 22px rgba(255, 255, 255, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-header {
+    animation: none;
+  }
+
+  .clear-all-button:hover::before,
+  .clear-all-button:hover .clear-all-button-inner,
+  .done-button:hover::after,
+  .delete-button:hover::after,
+  .todo-form button:hover {
     animation: none;
   }
 }
@@ -658,5 +824,15 @@ h1 {
   .reset-note {
     right: 10px;
     bottom: 96px;
+  }
+
+  footer {
+    left: 50%;
+    bottom: 150px;
+    max-width: calc(100% - 32px);
+  }
+
+  .copyright {
+    font-size: 0.66rem;
   }
 }
